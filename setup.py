@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+setup.py script
+"""
+
 import io
-from setuptools import setup, find_packages
 from collections import OrderedDict
+from setuptools import setup, find_packages
 
 with io.open('README.md', 'rt', encoding='utf8') as f:
-    readme = f.read()
+    README = f.read()
 
 setup(
     name='dojot.module',
@@ -19,7 +23,7 @@ setup(
     author_email='campanha@cpqd.com.br',
     maintainer='dojot team',
     description='Library for new dojot modules development',
-    long_description=readme,
+    long_description=README,
     packages=["dojot.module", "dojot.module.kafka"],
     include_package_data=True,
     zip_safe=False,

@@ -1,6 +1,8 @@
+"""
+Example for dojot.module.
+"""
 from dojot.module import Messenger, Config
-import time
-from dojot.module.Logger import Log
+from dojot.module.logger import Log
 
 
 LOGGER = Log().color_log()

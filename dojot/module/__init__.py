@@ -1,3 +1,7 @@
-from .Config import Config
-from .Auth import Auth
-from .Messenger import Messenger
+"""
+dojot module classes
+"""
+
+from .config import Config
+from .auth import Auth
+from .messenger import Messenger
