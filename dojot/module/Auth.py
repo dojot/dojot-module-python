@@ -2,15 +2,17 @@ import requests
 import base64
 import json
 from .Logger import Log
-from .Config import config
 
 LOGGER = Log().color_log()
 class Auth:
 
+    def __init__(self, config):
+        self.config = config
+
     def get_management_token(self, tenant):
 
         userinfo = {
-            "username": config.dojot["management_service"],
+            "username": self.config.dojot["management_service"],
             "service": tenant
         }
 
@@ -23,10 +25,8 @@ class Auth:
 
     def get_tenants(self):
 
-        url = config.auth['url'] + "/admin/tenants"
-        ret = requests.get(url, headers={'authorization': self.get_management_token(config.dojot['management_service'])})
+        url = self.config.auth['url'] + "/admin/tenants"
+        ret = requests.get(url, headers={'authorization': self.get_management_token(self.config.dojot['management_service'])})
         payload = ret.json()
         
         return payload['tenants']
-
-auth = Auth()

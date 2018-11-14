@@ -1,7 +1,6 @@
 from kafka import KafkaProducer
 from kafka.errors import KafkaTimeoutError
 import json
-from ..Config import config
 from .TopicManager import TopicManager
 from ..Logger import Log
 
@@ -9,7 +8,7 @@ LOGGER = Log().color_log()
 
 class Producer:
 
-    def __init__(self):
+    def __init__(self, config):
         self.broker = config.kafka['producer']['metadata.broker.list'].split(',')
 
     def init(self):

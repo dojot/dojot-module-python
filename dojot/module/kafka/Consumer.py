@@ -4,14 +4,13 @@ import json
 import time
 import threading
 from ..Logger import Log
-from ..Config import config
 from .TopicManager import TopicManager
 
 LOGGER = Log().color_log()
 
 class Consumer(threading.Thread):
 
-    def __init__(self, group_id, name=None):
+    def __init__(self, group_id, config, name=None):
         threading.Thread.__init__(self)
         self.topics = []
         self.broker = config.kafka['consumer']['metadata.broker.list'].split(',')

@@ -1,19 +1,20 @@
 import requests
-from ..Auth import auth
-
+from .. import Auth
 from ..Logger import Log
 
 LOGGER = Log().color_log()
 class TopicManager():
 
-    def __init__(self):
+    def __init__(self, config):
         self.topics = dict()
         self.tenants = []
+        self.broker = config.data_broker["url"]
+        self.auth = Auth(config)
 
     def get_key(self, tenant, subject):
         return tenant + ":" + subject
 
-    def get_topic(self, tenant, subject, broker, globalVal=""):
+    def get_topic(self, tenant, subject, globalVal=""):
         
         key = self.get_key(tenant,subject)
 
@@ -25,8 +26,8 @@ class TopicManager():
             else:
                 querystring = ""
 
-        url = broker + "/topic/" + subject + querystring
-        ret = requests.get(url, headers={'authorization': "Bearer " + auth.get_management_token(tenant)})
+        url = self.broker + "/topic/" + subject + querystring
+        ret = requests.get(url, headers={'authorization': "Bearer " + self.auth.get_management_token(tenant)})
         payload = ret.json()
         self.topics[key] = payload['topic']
 

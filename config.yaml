@@ -1,0 +1,25 @@
+kafka:
+  producer:
+    client.id: "kafka"
+    metadata.broker.list: "172.22.0.14:9092"
+    compression.codec: "gzip"
+    retry.backoff.ms: 200
+    message.send.max.retries: 10
+    socket.keepalive.enable: True
+    queue.buffering.max.messages: 100000
+    queue.buffering.max.ms: 1000
+    batch.num.messages: 1000000
+    dr_cb: true
+  consumer:
+    group.id: "data-broker"
+    metadata.broker.list: "172.22.0.14:9092"
+data_broker:
+  url: "http://172.22.0.15"
+auth:
+  url: "http://172.22.0.18:5000"
+dojot:
+  management_service: "dojot-management"
+  subjects:
+    tenancy: "dojot.tenancy"
+    devices: "dojot.device-manager.device"
+    device_data: "device-data"

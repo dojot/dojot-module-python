@@ -1,3 +1,3 @@
-from .Config import config
-from .Auth import auth
+from .Config import Config
+from .Auth import Auth
 from .Messenger import Messenger

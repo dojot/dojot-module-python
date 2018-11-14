@@ -3,16 +3,16 @@ import uuid
 from .kafka import Producer
 from .kafka import TopicManager
 from .kafka import Consumer
-from .Config import config
-from .Auth import auth
+from .Auth import Auth
 from .Logger import Log
 
 LOGGER = Log().color_log()
 
 class Messenger():
 
-    def __init__(self, name):
-        self.topic_manager = TopicManager()
+    def __init__(self, name, config):
+        self.config = config
+        self.topic_manager = TopicManager(config)
         self.event_callbacks = dict()
         self.tenants = []
         self.subjects = dict()
@@ -21,7 +21,7 @@ class Messenger():
         self.global_subjects = dict()
         self.instance_id = name + str(uuid.uuid4())
 
-        self.producer = Producer()
+        self.producer = Producer(config)
         ret = self.producer.init()
         
 
@@ -30,9 +30,9 @@ class Messenger():
         else:
             LOGGER.info("Could not create producer")
 
-        self.consumer = Consumer("dojotmodulepython"+ str(uuid.uuid4()))
+        self.consumer = Consumer("dojotmodulepython"+ str(uuid.uuid4()), config)
 
-        self.create_channel(config.dojot['subjects']['tenancy'], "rw", True)
+        self.create_channel(self.config.dojot['subjects']['tenancy'], "rw", True)
 
 
 
@@ -40,13 +40,14 @@ class Messenger():
         """
         Initializes the messenger and sets with all tenants
         """
-        self.on(config.dojot['subjects']['tenancy'], "message", self.process_new_tenant)
+        self.on(self.config.dojot['subjects']['tenancy'], "message", self.process_new_tenant)
+        auth = Auth(self.config)
         try:
             ret_tenants = auth.get_tenants()
             LOGGER.info("Retrieved list of tenants")
             for ten in ret_tenants:
                 LOGGER.info("Bootstraping tenant: %s" % ten)
-                self.process_new_tenant(config.dojot['management_service'], json.dumps({"tenant": ten}))
+                self.process_new_tenant(self.config.dojot['management_service'], json.dumps({"tenant": ten}))
                 LOGGER.info("%s bootstrapped." % ten)
                 LOGGER.debug("tenants: %s" % self.tenants)
             LOGGER.info("Finished tenant boostrapping")
@@ -81,7 +82,7 @@ class Messenger():
         self.tenants.append(data['tenant'])
         for sub in self.subjects:
             self.__bootstrap_tenants(sub, data['tenant'], self.subjects[sub]['mode'])
-        self.emit(config.dojot['subjects']['tenancy'], config.dojot['management_service'], "new-tenant", data['tenant'])
+        self.emit(self.config.dojot['subjects']['tenancy'], self.config.dojot['management_service'], "new-tenant", data['tenant'])
 
 
 
@@ -133,7 +134,7 @@ class Messenger():
         associated_tenants = []
 
         if(is_global is True):
-            associated_tenants = [config.dojot['management_service']]
+            associated_tenants = [self.config.dojot['management_service']]
             self.global_subjects[subject] = dict()
             self.global_subjects[subject]['mode'] = mode
         else:
@@ -158,7 +159,7 @@ class Messenger():
         LOGGER.info("Requesting topic for %s@%s" % (subject,tenant))
 
         try:
-            ret_topic = self.topic_manager.get_topic(tenant, subject, config.data_broker['url'], is_global)
+            ret_topic = self.topic_manager.get_topic(tenant, subject, is_global)
             LOGGER.info("Got topics: %s" % (json.dumps(ret_topic)))
             if (ret_topic in self.topics):
                 LOGGER.info("Already have a topic for %s@%s" % (subject,tenant))
