@@ -9,7 +9,7 @@ kafka-python==1.4.7
 more-itertools==4.3.0
 pkg-resources==0.0.0
 pluggy==0.8.0
-py==1.7.0
+py==1.10.0
 pytest==4.0.0
 pytest-cov==2.6.0
 requests==2.20.0
